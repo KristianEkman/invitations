@@ -15,12 +15,25 @@ export class AppComponent {
   readonly invitationMessage = this.getInvitationMessage();
   readonly invitationImage =
     this.language === 'sv' ? '/swedish.png' : '/english.png';
-  readonly invitationImageAlt =
-    this.language === 'sv' ? 'Inbjudan på svenska' : 'Invitation in English';
+  readonly invitationAlt = this.language === 'sv' ? 'Inbjudan' : 'Invitation';
 
   isOpened = false;
+  isFolding = false;
 
   openInvitation(): void {
+    if (this.isOpened || this.isFolding) {
+      return;
+    }
+
+    this.isFolding = true;
+  }
+
+  completeFoldAway(): void {
+    if (!this.isFolding) {
+      return;
+    }
+
+    this.isFolding = false;
     this.isOpened = true;
   }
 
@@ -33,7 +46,7 @@ export class AppComponent {
   }
 
   private getLanguageFromQuery(): Language {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(globalThis.location.search);
     const languageParam = params.get('language') ?? params.get('lang');
 
     return languageParam?.toLowerCase() === 'sv' ? 'sv' : 'en';
@@ -48,7 +61,7 @@ export class AppComponent {
   }
 
   private getNamesFromQuery(): string[] {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(globalThis.location.search);
 
     const nameParams = params.getAll('name');
     if (nameParams.length > 0) {

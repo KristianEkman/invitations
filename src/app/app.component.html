@@ -4,15 +4,18 @@
       type="button"
       class="card"
       aria-label="Open invitation"
-      [attr.aria-expanded]="isOpened"
+      [class.is-folding]="isFolding"
+      [attr.aria-expanded]="isOpened || isFolding"
+      [disabled]="isFolding"
       (click)="openInvitation()"
+      (animationend)="completeFoldAway()"
     >
       <p class="intro">{{ invitationMessage }}</p>
       <h1>{{ invitationTitle }}</h1>
     </button>
 
     <div class="letter" [class.is-visible]="isOpened" aria-hidden="true">
-      <img [src]="invitationImage" [alt]="invitationImageAlt" />
+      <img [src]="invitationImage" [alt]="invitationAlt" />
     </div>
   </section>
 </main>
