@@ -14,7 +14,7 @@ export class AppComponent {
   readonly invitationTitle = this.formatNames(this.names);
   readonly invitationMessage = this.getInvitationMessage();
   readonly invitationImage =
-    this.language === 'sv' ? '/swedish.png' : '/english.png';
+    this.language === 'sv' ? 'swedish.png' : 'english.png';
   readonly invitationAlt = this.language === 'sv' ? 'Inbjudan' : 'Invitation';
 
   isOpened = false;

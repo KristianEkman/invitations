@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:gh-pages": "ng build --configuration production --base-href /invitations/",
+    "deploy": "npx angular-cli-ghpages --dir=dist/invitations/browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
