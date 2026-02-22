@@ -1,0 +1,18 @@
+<main class="invitation">
+  <section class="envelope" [class.is-open]="isOpened" aria-label="Invitation">
+    <button
+      type="button"
+      class="card"
+      aria-label="Open invitation"
+      [attr.aria-expanded]="isOpened"
+      (click)="openInvitation()"
+    >
+      <p class="intro">{{ invitationMessage }}</p>
+      <h1>{{ invitationTitle }}</h1>
+    </button>
+
+    <div class="letter" [class.is-visible]="isOpened" aria-hidden="true">
+      <img [src]="invitationImage" [alt]="invitationImageAlt" />
+    </div>
+  </section>
+</main>
