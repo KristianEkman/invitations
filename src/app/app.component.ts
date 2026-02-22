@@ -54,7 +54,7 @@ export class AppComponent {
 
   private getInvitationMessage(): string {
     if (this.language === 'sv') {
-      return this.names.length > 1 ? 'Ni är inbjudna' : 'Ni är inbjuden';
+      return this.names.length > 1 ? 'Ni är inbjudna' : 'Du är inbjuden';
     }
 
     return 'You are invited';
