@@ -29,9 +29,8 @@
     #fbf9f4;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
   text-align: center;
-  font-family:
-    "Cormorant Garamond", "Iowan Old Style", "Times New Roman", serif;
-  color: #2f2a2a;
+  font-family: "MonteCarlo", "Segoe Script", cursive;
+  color: #6a605c;
   cursor: pointer;
   transform-origin: top center;
   backface-visibility: hidden;
@@ -99,17 +98,16 @@
 
 .intro {
   margin: 0 0 0.9rem;
-  font-style: italic;
-  font-size: clamp(2rem, 5vw, 2.65rem);
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  line-height: 1.25;
+  font-size: clamp(1.9rem, 4.8vw, 2.5rem);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
 }
 
 h1 {
   margin: 0;
-  font-size: clamp(2.3rem, 6vw, 3.25rem);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 1.15;
+  font-size: clamp(2.15rem, 5.6vw, 3rem);
+  font-weight: 300;
+  letter-spacing: 0.005em;
+  line-height: 1.2;
 }
