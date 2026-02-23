@@ -17,5 +17,62 @@
     <div class="letter" [class.is-visible]="isOpened" aria-hidden="true">
       <img [src]="invitationImage" [alt]="invitationAlt" />
     </div>
+
+    @if (isOpened) {
+      <section class="rsvp" [attr.aria-label]="rsvpHeading">
+        <h2>{{ rsvpHeading }}</h2>
+
+        @if (isSubmitted) {
+          <p class="status success">{{ successMessage }}</p>
+        }
+
+        @if (submitError) {
+          <p class="status error">{{ submitError }}</p>
+        }
+
+        <form [formGroup]="rsvpForm" (ngSubmit)="submitRsvp()" novalidate>
+          <label>
+            <span>{{ contactNameLabel }}</span>
+            <input type="text" formControlName="contactName" />
+            @if (
+              rsvpForm.controls.contactName.touched &&
+              rsvpForm.controls.contactName.hasError('required')
+            ) {
+              <small>{{ requiredMessage }}</small>
+            }
+          </label>
+
+          <label>
+            <span>{{ emailLabel }}</span>
+            <input type="email" formControlName="email" />
+            @if (rsvpForm.controls.email.touched && rsvpForm.controls.email.hasError('email')) {
+              <small>{{ invalidEmailMessage }}</small>
+            }
+          </label>
+
+          <label>
+            <span>{{ attendingLabel }}</span>
+            <select formControlName="attending">
+              <option value="yes">{{ attendingYesLabel }}</option>
+              <option value="no">{{ attendingNoLabel }}</option>
+            </select>
+          </label>
+
+          <label>
+            <span>{{ guestsLabel }}</span>
+            <input type="number" min="0" max="10" formControlName="guests" />
+          </label>
+
+          <label>
+            <span>{{ noteLabel }}</span>
+            <textarea rows="4" formControlName="note"></textarea>
+          </label>
+
+          <button type="submit" [disabled]="isSubmitting || isSubmitted">
+            {{ isSubmitting ? submittingLabel : submitLabel }}
+          </button>
+        </form>
+      </section>
+    }
   </section>
 </main>
