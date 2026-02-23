@@ -24,7 +24,7 @@ export class AppComponent {
   readonly invitationTitle = this.formatNames(this.names);
   readonly invitationMessage = this.getInvitationMessage();
   readonly invitationImage =
-    this.language === 'sv' ? 'swedish2.png' : 'english2.png';
+    this.language === 'sv' ? 'swedish4.png' : 'english4.png';
   readonly invitationAlt = this.language === 'sv' ? 'Inbjudan' : 'Invitation';
   readonly rsvpHeading = this.language === 'sv' ? 'OSA' : 'RSVP';
   readonly contactNameLabel = this.language === 'sv' ? 'Namn' : 'Name';
@@ -170,7 +170,7 @@ export class AppComponent {
 
   private getInvitationMessage(): string {
     if (this.language === 'sv') {
-      return this.names.length > 1 ? 'Ni är inbjudna' : 'Ni är inbjuden';
+      return this.names.length > 1 ? 'Ni är inbjudna' : 'Du är inbjuden';
     }
 
     return 'You are invited';
