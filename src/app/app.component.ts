@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
 type Language = 'en' | 'sv';
 
@@ -28,10 +33,12 @@ export class AppComponent {
     this.language === 'sv' ? 'Kommer du?' : 'Will you attend?';
   readonly attendingYesLabel = this.language === 'sv' ? 'Ja' : 'Yes';
   readonly attendingNoLabel = this.language === 'sv' ? 'Nej' : 'No';
-  readonly guestsLabel = this.language === 'sv' ? 'Antal gäster' : 'Number of guests';
+  readonly guestsLabel =
+    this.language === 'sv' ? 'Antal gäster' : 'Number of guests';
   readonly noteLabel = this.language === 'sv' ? 'Meddelande' : 'Message';
   readonly submitLabel = this.language === 'sv' ? 'Skicka svar' : 'Send RSVP';
-  readonly submittingLabel = this.language === 'sv' ? 'Skickar...' : 'Sending...';
+  readonly submittingLabel =
+    this.language === 'sv' ? 'Skickar...' : 'Sending...';
   readonly successMessage =
     this.language === 'sv'
       ? 'Tack! Ditt svar är registrerat.'
@@ -41,9 +48,13 @@ export class AppComponent {
       ? 'Något gick fel. Försök igen.'
       : 'Something went wrong. Please try again.';
   readonly requiredMessage =
-    this.language === 'sv' ? 'Detta fält är obligatoriskt.' : 'This field is required.';
+    this.language === 'sv'
+      ? 'Detta fält är obligatoriskt.'
+      : 'This field is required.';
   readonly invalidEmailMessage =
-    this.language === 'sv' ? 'Ange en giltig e-postadress.' : 'Enter a valid email address.';
+    this.language === 'sv'
+      ? 'Ange en giltig e-postadress.'
+      : 'Enter a valid email address.';
 
   isOpened = false;
   isFolding = false;

@@ -36,7 +36,7 @@
             <input type="text" formControlName="contactName" />
             @if (
               rsvpForm.controls.contactName.touched &&
-              rsvpForm.controls.contactName.hasError('required')
+              rsvpForm.controls.contactName.hasError("required")
             ) {
               <small>{{ requiredMessage }}</small>
             }
@@ -45,7 +45,10 @@
           <label>
             <span>{{ emailLabel }}</span>
             <input type="email" formControlName="email" />
-            @if (rsvpForm.controls.email.touched && rsvpForm.controls.email.hasError('email')) {
+            @if (
+              rsvpForm.controls.email.touched &&
+              rsvpForm.controls.email.hasError("email")
+            ) {
               <small>{{ invalidEmailMessage }}</small>
             }
           </label>
