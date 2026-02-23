@@ -1,0 +1,66 @@
+<section class="summary" [attr.aria-label]="'summary.title' | translate">
+  <header class="summary-header">
+    <h1>{{ "summary.title" | translate }}</h1>
+    <button
+      type="button"
+      class="summary-refresh"
+      [disabled]="isLoading"
+      (click)="refresh()"
+    >
+      {{ "summary.refresh" | translate }}
+    </button>
+  </header>
+
+  @if (error) {
+    <p class="status error">{{ error }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="status">{{ "summary.loading" | translate }}</p>
+  } @else {
+    @if (rows.length === 0) {
+      <p class="status">{{ "summary.empty" | translate }}</p>
+    } @else {
+      <div class="summary-table-wrapper">
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>{{ "summary.columns.name" | translate }}</th>
+              <th>{{ "summary.columns.email" | translate }}</th>
+              <th>{{ "summary.columns.attending" | translate }}</th>
+              <th>{{ "summary.columns.foodPreferences" | translate }}</th>
+              <th>{{ "summary.columns.transportation" | translate }}</th>
+              <th>{{ "summary.columns.note" | translate }}</th>
+              <th>{{ "summary.columns.submittedAt" | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows; track $index) {
+              <tr>
+                <td>{{ row.inviteeName }}</td>
+                <td>{{ row.email || "-" }}</td>
+                <td>
+                  {{
+                    (row.attending === "yes" ? "form.yes" : "form.no")
+                      | translate
+                  }}
+                </td>
+                <td>{{ row.foodPreferences || "-" }}</td>
+                <td>
+                  {{
+                    (row.transportationNeeded === "yes"
+                      ? "form.yes"
+                      : "form.no"
+                    ) | translate
+                  }}
+                </td>
+                <td>{{ row.note || "-" }}</td>
+                <td>{{ row.submittedAt || "-" }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>

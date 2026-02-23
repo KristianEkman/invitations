@@ -5,85 +5,72 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { AdminSummaryComponent } from './admin-summary.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 type Language = 'en' | 'sv';
+type RsvpFormGroup = FormGroup<{
+  email: FormControl<string>;
+  attending: FormControl<'yes' | 'no'>;
+  foodPreferences: FormControl<string>;
+  transportationNeeded: FormControl<'yes' | 'no'>;
+  note: FormControl<string>;
+}>;
+
+type RsvpFormEntry = {
+  inviteeName: string;
+  form: RsvpFormGroup;
+  isSubmitting: boolean;
+  isSubmitted: boolean;
+  submitError: string;
+  isClosed: boolean;
+};
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule, AdminSummaryComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  private readonly databaseUrl =
+  readonly databaseUrl =
     'https://invitations-35792-default-rtdb.europe-west1.firebasedatabase.app';
+  readonly invitationKey = this.getInvitationKey();
 
   readonly language = this.getLanguageFromQuery();
-  readonly names = this.getNamesFromQuery();
-  readonly invitationTitle = this.formatNames(this.names);
-  readonly invitationMessage = this.getInvitationMessage();
+  readonly isAdmin = this.getIsAdminFromQuery();
+  names = this.getNamesFromQuery();
+  invitationTitle = '';
+  invitationMessage = '';
   readonly invitationImage =
     this.language === 'sv' ? 'swedish4.png' : 'english4.png';
-  readonly invitationAlt = this.language === 'sv' ? 'Inbjudan' : 'Invitation';
-  readonly rsvpHeading = this.language === 'sv' ? 'OSA' : 'RSVP';
-  readonly contactNameLabel = this.language === 'sv' ? 'Namn' : 'Name';
-  readonly emailLabel = this.language === 'sv' ? 'E-post' : 'Email';
-  readonly attendingLabel =
-    this.language === 'sv' ? 'Kommer du?' : 'Will you attend?';
-  readonly attendingYesLabel = this.language === 'sv' ? 'Ja' : 'Yes';
-  readonly attendingNoLabel = this.language === 'sv' ? 'Nej' : 'No';
-  readonly guestsLabel =
-    this.language === 'sv' ? 'Antal gäster' : 'Number of guests';
-  readonly noteLabel = this.language === 'sv' ? 'Meddelande' : 'Message';
-  readonly submitLabel = this.language === 'sv' ? 'Skicka svar' : 'Send RSVP';
-  readonly submittingLabel =
-    this.language === 'sv' ? 'Skickar...' : 'Sending...';
-  readonly successMessage =
-    this.language === 'sv'
-      ? 'Tack! Ditt svar är registrerat.'
-      : 'Thank you! Your RSVP has been recorded.';
-  readonly errorMessage =
-    this.language === 'sv'
-      ? 'Något gick fel. Försök igen.'
-      : 'Something went wrong. Please try again.';
-  readonly requiredMessage =
-    this.language === 'sv'
-      ? 'Detta fält är obligatoriskt.'
-      : 'This field is required.';
-  readonly invalidEmailMessage =
-    this.language === 'sv'
-      ? 'Ange en giltig e-postadress.'
-      : 'Enter a valid email address.';
 
   isOpened = false;
   isFolding = false;
-  isSubmitting = false;
-  isSubmitted = false;
-  submitError = '';
+  isRsvpFormVisible = false;
+  rsvpForms: RsvpFormEntry[] = [];
 
-  readonly rsvpForm = new FormGroup({
-    contactName: new FormControl(this.invitationTitle, {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    email: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.email],
-    }),
-    attending: new FormControl<'yes' | 'no'>('yes', {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    guests: new FormControl(Math.max(this.names.length, 1), {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0), Validators.max(10)],
-    }),
-    note: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.maxLength(300)],
-    }),
-  });
+  get visibleRsvpForms(): RsvpFormEntry[] {
+    return this.rsvpForms.filter((rsvpFormEntry) => !rsvpFormEntry.isClosed);
+  }
+
+  get allResponsesSent(): boolean {
+    return this.rsvpForms.length > 0 && this.visibleRsvpForms.length === 0;
+  }
+
+  constructor(private readonly translate: TranslateService) {
+    this.translate.setDefaultLang('en');
+    this.translate.use(this.language).subscribe(() => {
+      if (this.isAdmin) {
+        return;
+      }
+
+      this.initializeInvitationContent();
+    });
+
+    globalThis.document.documentElement.lang = this.language;
+  }
 
   openInvitation(): void {
     if (this.isOpened || this.isFolding) {
@@ -102,37 +89,62 @@ export class AppComponent {
     this.isOpened = true;
   }
 
-  async submitRsvp(): Promise<void> {
-    if (this.isSubmitting) {
+  showRsvpForm(): void {
+    if (this.allResponsesSent) {
+      this.reopenAllRsvpForms();
+    }
+
+    this.isRsvpFormVisible = true;
+  }
+
+  async submitRsvp(formEntry: RsvpFormEntry): Promise<void> {
+    if (formEntry.isSubmitting || formEntry.isSubmitted) {
       return;
     }
 
-    this.submitError = '';
-    this.rsvpForm.markAllAsTouched();
+    formEntry.submitError = '';
+    formEntry.form.markAllAsTouched();
 
-    if (this.rsvpForm.invalid) {
+    if (formEntry.form.invalid) {
       return;
     }
 
-    this.isSubmitting = true;
+    formEntry.isSubmitting = true;
 
     try {
-      const formValue = this.rsvpForm.getRawValue();
+      const formValue = formEntry.form.getRawValue();
 
       const payload = {
         invitationNames: this.names,
+        inviteeName: formEntry.inviteeName,
         invitationTitle: this.invitationTitle,
         language: this.language,
-        contactName: formValue.contactName.trim(),
+        contactName: formEntry.inviteeName,
         email: formValue.email.trim(),
         attending: formValue.attending,
-        guests: formValue.guests,
+        foodPreferences: formValue.foodPreferences.trim(),
+        transportationNeeded: formValue.transportationNeeded,
         note: formValue.note.trim(),
         submittedAt: new Date().toISOString(),
         source: globalThis.location.href,
       };
 
-      const response = await fetch(`${this.databaseUrl}/rsvps.json`, {
+      const response = await fetch(
+        `${this.databaseUrl}/rsvpsByInvitation/${encodeURIComponent(this.invitationKey)}/${encodeURIComponent(formEntry.inviteeName)}.json`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to submit RSVP');
+      }
+
+      const legacyResponse = await fetch(`${this.databaseUrl}/rsvps.json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,25 +152,143 @@ export class AppComponent {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
+      if (!legacyResponse.ok) {
         throw new Error('Failed to submit RSVP');
       }
 
-      this.isSubmitted = true;
-      this.rsvpForm.disable();
+      formEntry.isSubmitted = true;
+      formEntry.form.disable();
+      formEntry.isClosed = true;
+
+      if (this.visibleRsvpForms.length === 0) {
+        this.isRsvpFormVisible = false;
+      }
     } catch {
-      this.submitError = this.errorMessage;
+      formEntry.submitError = this.translate.instant('messages.error');
     } finally {
-      this.isSubmitting = false;
+      formEntry.isSubmitting = false;
     }
   }
 
-  private formatNames(names: string[]): string {
-    if (names.length <= 2) {
-      return names.join(' & ');
+  private initializeInvitationContent(): void {
+    if (this.names.length === 0) {
+      this.names = [this.translate.instant('invitation.guest')];
     }
 
-    return `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
+    this.invitationTitle = this.formatNames(this.names);
+    this.invitationMessage = this.getInvitationMessage();
+    this.rsvpForms = this.names.map((inviteeName) => ({
+      inviteeName,
+      form: this.createRsvpForm(),
+      isSubmitting: false,
+      isSubmitted: false,
+      submitError: '',
+      isClosed: false,
+    }));
+
+    void this.hydrateSavedRsvps();
+  }
+
+  private reopenAllRsvpForms(): void {
+    this.rsvpForms = this.rsvpForms.map((rsvpFormEntry) => {
+      if (!rsvpFormEntry.isClosed) {
+        return rsvpFormEntry;
+      }
+
+      rsvpFormEntry.isClosed = false;
+      rsvpFormEntry.isSubmitted = false;
+      rsvpFormEntry.form.enable();
+
+      return rsvpFormEntry;
+    });
+  }
+
+  private async hydrateSavedRsvps(): Promise<void> {
+    await Promise.all(
+      this.rsvpForms.map(async (rsvpFormEntry) => {
+        try {
+          const response = await fetch(
+            `${this.databaseUrl}/rsvpsByInvitation/${encodeURIComponent(this.invitationKey)}/${encodeURIComponent(rsvpFormEntry.inviteeName)}.json`,
+          );
+
+          if (!response.ok) {
+            return;
+          }
+
+          const savedValue = (await response.json()) as {
+            contactName?: string;
+            email?: string;
+            attending?: 'yes' | 'no';
+            foodPreferences?: string;
+            transportationNeeded?: 'yes' | 'no';
+            note?: string;
+          } | null;
+
+          if (!savedValue) {
+            return;
+          }
+
+          rsvpFormEntry.form.patchValue({
+            email: savedValue.email ?? '',
+            attending: savedValue.attending ?? 'yes',
+            foodPreferences: savedValue.foodPreferences ?? '',
+            transportationNeeded: savedValue.transportationNeeded ?? 'no',
+            note: savedValue.note ?? '',
+          });
+        } catch {
+          rsvpFormEntry.submitError = '';
+        }
+      }),
+    );
+  }
+
+  private getInvitationKey(): string {
+    const language = this.getLanguageFromQuery();
+    const names = this.getNamesFromQuery();
+    const path = globalThis.location.pathname;
+
+    return `${language}|${path}|${names.join('|')}`;
+  }
+
+  private createRsvpForm(): RsvpFormGroup {
+    return new FormGroup({
+      email: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.email],
+      }),
+      attending: new FormControl<'yes' | 'no'>('yes', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      foodPreferences: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.maxLength(300)],
+      }),
+      transportationNeeded: new FormControl<'yes' | 'no'>('no', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      note: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.maxLength(300)],
+      }),
+    });
+  }
+
+  private formatNames(names: string[]): string {
+    const translatedJoinWord = this.translate.instant('invitation.joinWord');
+    const joinWord =
+      translatedJoinWord === 'invitation.joinWord'
+        ? this.language === 'sv'
+          ? ' och '
+          : ' & '
+        : translatedJoinWord;
+
+    if (names.length <= 2) {
+      return names.join(joinWord);
+    }
+
+    return `${names.slice(0, -1).join(', ')}${joinWord}${names.at(-1)}`;
   }
 
   private getLanguageFromQuery(): Language {
@@ -168,12 +298,20 @@ export class AppComponent {
     return languageParam?.toLowerCase() === 'sv' ? 'sv' : 'en';
   }
 
-  private getInvitationMessage(): string {
-    if (this.language === 'sv') {
-      return this.names.length > 1 ? 'Ni är inbjudna' : 'Du är inbjuden';
-    }
+  private getIsAdminFromQuery(): boolean {
+    const params = new URLSearchParams(globalThis.location.search);
+    const adminParam = params.get('admin') ?? '';
 
-    return 'You are invited';
+    return adminParam.toLowerCase() === 'true';
+  }
+
+  private getInvitationMessage(): string {
+    const key =
+      this.names.length > 1
+        ? 'invitation.youAllAreInvited'
+        : 'invitation.youAreInvited';
+
+    return this.translate.instant(key);
   }
 
   private getNamesFromQuery(): string[] {
@@ -186,7 +324,7 @@ export class AppComponent {
 
     const namesParam = params.get('names');
     if (!namesParam) {
-      return [this.language === 'sv' ? 'Gäst' : 'Guest'];
+      return [];
     }
 
     return namesParam

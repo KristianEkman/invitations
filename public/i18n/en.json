@@ -1,0 +1,52 @@
+{
+  "invitation": {
+    "ariaLabel": "Invitation",
+    "openAriaLabel": "Open invitation",
+    "alt": "Invitation",
+    "guest": "Guest",
+    "joinWord": " & ",
+    "youAreInvited": "You are invited",
+    "youAllAreInvited": "You are invited"
+  },
+  "rsvp": {
+    "heading": "RSVP",
+    "button": "RSVP",
+    "allSent": "All responses sent"
+  },
+  "summary": {
+    "title": "Admin Summary",
+    "refresh": "Refresh",
+    "loading": "Loading answers...",
+    "empty": "No answers found.",
+    "error": "Could not load answers.",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "attending": "Attending",
+      "foodPreferences": "Food preferences",
+      "transportation": "Transportation",
+      "note": "Message",
+      "submittedAt": "Submitted at"
+    }
+  },
+  "form": {
+    "contactName": "Name",
+    "email": "Email",
+    "attending": "Will you attend?",
+    "foodPreferences": "Food preferences",
+    "transportationNeeded": "Do you need transportation?",
+    "note": "Message",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Send RSVP",
+    "submitting": "Sending..."
+  },
+  "messages": {
+    "success": "Thank you! Your RSVP has been recorded.",
+    "error": "Something went wrong. Please try again."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalidEmail": "Enter a valid email address."
+  }
+}

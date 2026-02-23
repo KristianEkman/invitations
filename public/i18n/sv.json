@@ -1,0 +1,52 @@
+{
+  "invitation": {
+    "ariaLabel": "Inbjudan",
+    "openAriaLabel": "Öppna inbjudan",
+    "alt": "Inbjudan",
+    "guest": "Gäst",
+    "joinWord": " och ",
+    "youAreInvited": "Du är inbjuden",
+    "youAllAreInvited": "Ni är inbjudna"
+  },
+  "rsvp": {
+    "heading": "OSA",
+    "button": "OSA",
+    "allSent": "Alla svar skickade"
+  },
+  "summary": {
+    "title": "Adminöversikt",
+    "refresh": "Uppdatera",
+    "loading": "Laddar svar...",
+    "empty": "Inga svar hittades.",
+    "error": "Kunde inte ladda svaren.",
+    "columns": {
+      "name": "Namn",
+      "email": "E-post",
+      "attending": "Kommer",
+      "foodPreferences": "Matpreferenser",
+      "transportation": "Transport",
+      "note": "Meddelande",
+      "submittedAt": "Skickat"
+    }
+  },
+  "form": {
+    "contactName": "Namn",
+    "email": "E-post",
+    "attending": "Kommer du?",
+    "foodPreferences": "Matpreferenser",
+    "transportationNeeded": "Behöver du transport?",
+    "note": "Meddelande",
+    "yes": "Ja",
+    "no": "Nej",
+    "submit": "Skicka svar",
+    "submitting": "Skickar..."
+  },
+  "messages": {
+    "success": "Tack! Ditt svar är registrerat.",
+    "error": "Något gick fel. Försök igen."
+  },
+  "validation": {
+    "required": "Detta fält är obligatoriskt.",
+    "invalidEmail": "Ange en giltig e-postadress."
+  }
+}

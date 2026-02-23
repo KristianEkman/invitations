@@ -84,6 +84,19 @@
   animation: fold-in 760ms cubic-bezier(0.19, 0.76, 0.25, 1) forwards;
 }
 
+.rsvp-trigger {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  border: 0;
+  border-radius: 0.35rem;
+  padding: 0.68rem 0.95rem;
+  background-color: #6a605c;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+}
+
 .rsvp {
   margin-top: 1rem;
   border: 1px solid rgba(78, 70, 66, 0.16);
@@ -100,6 +113,24 @@
   font-size: clamp(2rem, 4.2vw, 2.6rem);
   font-weight: 300;
   text-align: center;
+}
+
+.rsvp-entry {
+  padding: 1rem;
+  border: 1px solid rgba(78, 70, 66, 0.26);
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.rsvp-entry + .rsvp-entry {
+  margin-top: 1.25rem;
+}
+
+.rsvp-entry h3 {
+  margin: 0 0 0.75rem;
+  color: #524a46;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
 .rsvp form {

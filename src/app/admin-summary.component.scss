@@ -1,0 +1,73 @@
+.summary {
+  width: min(100%, 78rem);
+  border: 1px solid rgba(78, 70, 66, 0.16);
+  border-radius: 0.4rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.summary h1 {
+  margin: 0;
+  font-family: "MonteCarlo", "Segoe Script", cursive;
+  color: #6a605c;
+  font-size: clamp(2rem, 4.2vw, 2.6rem);
+  font-weight: 300;
+}
+
+.summary-refresh {
+  border: 0;
+  border-radius: 0.35rem;
+  padding: 0.56rem 0.9rem;
+  background-color: #6a605c;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.summary-refresh:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.summary-table-wrapper {
+  overflow-x: auto;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #3f3936;
+}
+
+.summary-table th,
+.summary-table td {
+  border: 1px solid rgba(78, 70, 66, 0.2);
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  font-size: 0.95rem;
+  vertical-align: top;
+}
+
+.summary-table th {
+  background: rgba(246, 243, 246, 0.75);
+  color: #524a46;
+  font-weight: 600;
+}
+
+.status {
+  margin: 0 0 0.8rem;
+  font-size: 0.95rem;
+}
+
+.status.error {
+  color: #9a3838;
+}

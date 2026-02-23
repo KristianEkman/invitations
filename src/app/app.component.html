@@ -1,81 +1,114 @@
 <main class="invitation">
-  <section class="envelope" [class.is-open]="isOpened" aria-label="Invitation">
-    <button
-      type="button"
-      class="card"
-      aria-label="Open invitation"
-      [class.is-folding]="isFolding"
-      [attr.aria-expanded]="isOpened || isFolding"
-      [disabled]="isFolding"
-      (click)="openInvitation()"
-      (animationend)="completeFoldAway()"
+  @if (isAdmin) {
+    <app-admin-summary [databaseUrl]="databaseUrl" />
+  } @else {
+    <section
+      class="envelope"
+      [class.is-open]="isOpened"
+      [attr.aria-label]="'invitation.ariaLabel' | translate"
     >
-      <p class="intro">{{ invitationMessage }}</p>
-      <h1>{{ invitationTitle }}</h1>
-    </button>
+      <button
+        type="button"
+        class="card"
+        [attr.aria-label]="'invitation.openAriaLabel' | translate"
+        [class.is-folding]="isFolding"
+        [attr.aria-expanded]="isOpened || isFolding"
+        [disabled]="isFolding"
+        (click)="openInvitation()"
+        (animationend)="completeFoldAway()"
+      >
+        <p class="intro">{{ invitationMessage }}</p>
+        <h1>{{ invitationTitle }}</h1>
+      </button>
 
-    <div class="letter" [class.is-visible]="isOpened" aria-hidden="true">
-      <img [src]="invitationImage" [alt]="invitationAlt" />
-    </div>
+      <div class="letter" [class.is-visible]="isOpened" aria-hidden="true">
+        <img [src]="invitationImage" [alt]="'invitation.alt' | translate" />
+      </div>
 
-    @if (isOpened) {
-      <section class="rsvp" [attr.aria-label]="rsvpHeading">
-        <h2>{{ rsvpHeading }}</h2>
-
-        @if (isSubmitted) {
-          <p class="status success">{{ successMessage }}</p>
-        }
-
-        @if (submitError) {
-          <p class="status error">{{ submitError }}</p>
-        }
-
-        <form [formGroup]="rsvpForm" (ngSubmit)="submitRsvp()" novalidate>
-          <label>
-            <span>{{ contactNameLabel }}</span>
-            <input type="text" formControlName="contactName" />
-            @if (
-              rsvpForm.controls.contactName.touched &&
-              rsvpForm.controls.contactName.hasError("required")
-            ) {
-              <small>{{ requiredMessage }}</small>
-            }
-          </label>
-
-          <label>
-            <span>{{ emailLabel }}</span>
-            <input type="email" formControlName="email" />
-            @if (
-              rsvpForm.controls.email.touched &&
-              rsvpForm.controls.email.hasError("email")
-            ) {
-              <small>{{ invalidEmailMessage }}</small>
-            }
-          </label>
-
-          <label>
-            <span>{{ attendingLabel }}</span>
-            <select formControlName="attending">
-              <option value="yes">{{ attendingYesLabel }}</option>
-              <option value="no">{{ attendingNoLabel }}</option>
-            </select>
-          </label>
-
-          <label>
-            <span>{{ guestsLabel }}</span>
-            <input type="number" min="0" max="10" formControlName="guests" />
-          </label>
-
-          <label>
-            <span>{{ noteLabel }}</span>
-            <textarea rows="4" formControlName="note"></textarea>
-          </label>
-
-          <button type="submit" [disabled]="isSubmitting || isSubmitted">
-            {{ isSubmitting ? submittingLabel : submitLabel }}
+      @if (isOpened) {
+        @if (!isRsvpFormVisible) {
+          <button type="button" class="rsvp-trigger" (click)="showRsvpForm()">
+            {{
+              (allResponsesSent ? "rsvp.allSent" : "rsvp.button") | translate
+            }}
           </button>
-        </form>
-      </section>
-    }
-  </section>
+        }
+
+        @if (isRsvpFormVisible) {
+          <section class="rsvp" [attr.aria-label]="'rsvp.heading' | translate">
+            <h2>{{ "rsvp.heading" | translate }}</h2>
+            @for (rsvpFormEntry of visibleRsvpForms; track $index) {
+              <section class="rsvp-entry">
+                <h3>{{ rsvpFormEntry.inviteeName }}</h3>
+
+                <form
+                  [formGroup]="rsvpFormEntry.form"
+                  (ngSubmit)="submitRsvp(rsvpFormEntry)"
+                  novalidate
+                >
+                  <label>
+                    <span>{{ "form.email" | translate }}</span>
+                    <input type="email" formControlName="email" />
+                    @if (
+                      rsvpFormEntry.form.controls.email.touched &&
+                      rsvpFormEntry.form.controls.email.hasError("email")
+                    ) {
+                      <small>{{ "validation.invalidEmail" | translate }}</small>
+                    }
+                  </label>
+
+                  <label>
+                    <span>{{ "form.attending" | translate }}</span>
+                    <select formControlName="attending">
+                      <option value="yes">{{ "form.yes" | translate }}</option>
+                      <option value="no">{{ "form.no" | translate }}</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>{{ "form.foodPreferences" | translate }}</span>
+                    <textarea
+                      rows="3"
+                      formControlName="foodPreferences"
+                    ></textarea>
+                  </label>
+
+                  <label>
+                    <span>{{ "form.transportationNeeded" | translate }}</span>
+                    <select formControlName="transportationNeeded">
+                      <option value="yes">{{ "form.yes" | translate }}</option>
+                      <option value="no">{{ "form.no" | translate }}</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span>{{ "form.note" | translate }}</span>
+                    <textarea rows="4" formControlName="note"></textarea>
+                  </label>
+
+                  @if (rsvpFormEntry.submitError) {
+                    <p class="status error">{{ rsvpFormEntry.submitError }}</p>
+                  }
+
+                  <button
+                    type="submit"
+                    [disabled]="
+                      rsvpFormEntry.isSubmitting || rsvpFormEntry.isSubmitted
+                    "
+                  >
+                    {{
+                      (rsvpFormEntry.isSubmitting
+                        ? "form.submitting"
+                        : "form.submit"
+                      ) | translate
+                    }}
+                  </button>
+                </form>
+              </section>
+            }
+          </section>
+        }
+      }
+    </section>
+  }
 </main>
